@@ -99,7 +99,7 @@ const headers = [
   {
     id: 1,
     name: "Ranking",
-    icon: "https://giorgi-ghviniashvili.github.io/typeamedia/tranquil-destinations/images/icons/hinduist-yoga-position.svg",
+    icon: "https://giorgi-ghviniashvili.github.io/typeamedia/tranquil-destinations/images/icons/tap.svg",
     propName: "column_a",
     rankProp: "column_a",
     sort: sortFunc,
@@ -217,22 +217,7 @@ const headers = [
   },
 ];
 
-const cities = [
-  "Tbilisi",
-  "Batumi",
-  "Kutaisi",
-  "Zugdidi",
-  "Lanchxuti",
-  "Mestia",
-  "Telavi",
-  "Gori",
-  "Tkaltubo",
-  "Stepantsminda",
-  "Khashuri",
-  "Dedoplistskaro",
-  "Chiatura",
-  "Tkibuli",
-];
+const cities = ["Tbilisi", "Batumi", "Kutaisi", "Rustavi", "Gori", "Zugdidi", "Poti", "Kobuleti", "Khashuri", "Samtredia", "Senaki", "Zestafoni", "Marneuli", "Telavi", "Akhaltsikhe", "Ozurgeti", "Kaspi", "Chiatura", "Tsqaltubo", "Sagarejo", "Gardabani", "Borjomi", "Tkibuli", "Khoni", "Bolnisi", "Akhalkalaki", "Gurjaani", "Mtskheta", "Kvareli", "Akhmeta", "Kareli", "Lanchkhuti", "Tsalenjikha", "Dusheti", "Sachkhere", "Dedoplistsqaro", "Lagodekhi", "Ninotsminda", "Abasha", "Tsnori", "Terjola", "Martvili", "Jvari", "Khobi", "Vani", "Baghdati", "Vale", "Tetritsqaro", "Tsalka", "Dmanisi", "Oni", "Ambrolauri", "Sighnaghi", "Tsageri"];
 
 colorDomain = [1, cities.length];
 
