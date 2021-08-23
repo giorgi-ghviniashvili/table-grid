@@ -1,4 +1,4 @@
-Lightweight table grid component
+### Lightweight table grid component
 
 | | |
 |:-------------------------:|:-------------------------:|
