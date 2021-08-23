@@ -60,7 +60,7 @@ const mainHeaderTemplate = () => {
 
 const getColorBox = (rank, value, colorScale) => {
   const color = colorScale(rank);
-  const textColor = rank > 6 && rank < 9 ? "#17365D" : "#fff";
+  const textColor = rank > 22 && rank < 44 ? "#17365D" : "#fff";
 
   return `<div 
     class="color-box" 
