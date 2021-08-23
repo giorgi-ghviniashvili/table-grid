@@ -35,11 +35,22 @@ const headers = [
     name: "City",
     icon: null,
     propName: "City",
-    sort: false,
+    sort: false, // disable sort
     cellTemplate: (d) => {
       return `${d.City}`;
     },
-    headerTemplate: mainHeaderTemplate,
+    headerTemplate: () => {
+      return new Promise((res) => {
+        res(`<div class="table-icon">
+          <div class="arrow">
+            ${arrow}
+          </div>
+          <div class="location-txt">
+            Location
+          </div>
+        </div>`)
+      })
+    },
   },
   {
     id: 1,
@@ -48,14 +59,28 @@ const headers = [
     propName: "column_a",
     rankProp: "column_a",
     sort: sortFunc,
-    class: "",
-    cellTemplate: function (d) {
-      const rank = d[this.rankProp];
-      return getColorBox(rank, rank, this.colorScale);
+    class: "", // apply additional class
+    cellTemplate: () => {
+      return `<h1>Any html content here</h1>`
     },
-    headerTemplate: headerTemplate,
-    order: "asc",
-    colorScale: d3.scaleQuantile([1, 5], colors),
+    headerTemplate: () => {
+      return new Promise((res) => {
+        res(`<div class="table-icon">
+          <div class="arrow">
+            ${arrow}
+          </div>
+          <div class="square-icon">
+            <div class="icon">[icon svg as text]</div>
+          </div>
+          <div class="header-text">
+            ${name}
+          </div>
+        </div>`)
+      })
+    },
+    order: "asc", // default order
+    colorScale: (colorDomain) => d3.scaleQuantile(colorDomain, colors),
+    category: "category a"
   }
 ]
 ```
