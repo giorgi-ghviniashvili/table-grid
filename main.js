@@ -1,10 +1,11 @@
-const colors = [
-  "#17365D",
-  "rgba(23, 54, 93, 0.6)",
-  "rgba(151, 128, 139, 0.6)",
-  "rgba(125, 54, 80, 0.6)",
-  "#7D3650",
-];
+const colors = ["#d7191c","#fdae61","#ffffbf","#a6d96a","#1a9641"]
+// [
+  // "#17365D",
+  // "rgba(23, 54, 93, 0.6)",
+  // "rgba(151, 128, 139, 0.6)",
+  // "rgba(125, 54, 80, 0.6)",
+  // "#7D3650",
+// ];
 
 const arrow = `<svg width="14" height="12" viewBox="0 0 14 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.72431 10.5154C7.33862 11.178 6.38155 11.178 5.99586 10.5154L0.749374 1.5031C0.361282 0.836444 0.842204 -6.86199e-07 1.6136 -7.53081e-07L12.1066 -1.66285e-06C12.878 -1.72973e-06 13.3589 0.836442 12.9708 1.5031L7.72431 10.5154Z" fill="currentColor"/></svg>`;
 
@@ -59,7 +60,7 @@ const mainHeaderTemplate = () => {
 
 const getColorBox = (rank, value, colorScale) => {
   const color = colorScale(rank);
-  const textColor = rank > 35 && rank < 52 ? "#17365D" : "#fff";
+  const textColor = rank > 6 && rank < 9 ? "#17365D" : "#fff";
 
   return `<div 
     class="color-box" 
@@ -80,7 +81,7 @@ function sortFunc(a, b, order) {
   return d3[orderFunc](a[this.rankProp], b[this.rankProp]);
 }
 
-
+let colorDomain = [];
 
 const headers = [
   {
@@ -105,11 +106,11 @@ const headers = [
     class: "",
     cellTemplate: function (d) {
       const rank = d[this.rankProp];
-      return getColorBox(rank, rank, this.colorScale);
+      return getColorBox(rank, rank, this.colorScale(colorDomain));
     },
     headerTemplate: headerTemplate,
     order: "asc",
-    colorScale: d3.scaleQuantile([1, 5], colors),
+    colorScale: (domain) => d3.scaleQuantile(domain, colors),
     category: "category a"
   },
   {
@@ -122,11 +123,11 @@ const headers = [
     class: "",
     cellTemplate: function (d) {
       const rank = d[this.rankProp];
-      return getColorBox(rank, rank, this.colorScale);
+      return getColorBox(rank, rank, this.colorScale(colorDomain));
     },
     headerTemplate: headerTemplate,
     order: "asc",
-    colorScale: d3.scaleQuantile([1, 5], colors),
+    colorScale: (domain) => d3.scaleQuantile(domain, colors),
     category: "category a"
   },
   {
@@ -139,11 +140,11 @@ const headers = [
     class: "",
     cellTemplate: function (d) {
       const rank = d[this.rankProp];
-      return getColorBox(rank, rank, this.colorScale);
+      return getColorBox(rank, rank, this.colorScale(colorDomain));
     },
     headerTemplate: headerTemplate,
     order: "asc",
-    colorScale: d3.scaleQuantile([1, 5], colors),
+    colorScale: (domain) => d3.scaleQuantile(domain, colors),
     category: "category b"
   },
   {
@@ -156,11 +157,11 @@ const headers = [
     class: "",
     cellTemplate: function (d) {
       const rank = d[this.rankProp];
-      return getColorBox(rank, rank, this.colorScale);
+      return getColorBox(rank, rank, this.colorScale(colorDomain));
     },
     headerTemplate: headerTemplate,
     order: "asc",
-    colorScale: d3.scaleQuantile([1, 5], colors),
+    colorScale: (domain) => d3.scaleQuantile(domain, colors),
     category: "category b"
   },
   {
@@ -173,11 +174,11 @@ const headers = [
     class: "",
     cellTemplate: function (d) {
       const rank = d[this.rankProp];
-      return getColorBox(rank, rank, this.colorScale);
+      return getColorBox(rank, rank, this.colorScale(colorDomain));
     },
     headerTemplate: headerTemplate,
     order: "asc",
-    colorScale: d3.scaleQuantile([1, 5], colors),
+    colorScale: (domain) => d3.scaleQuantile(domain, colors),
     category: "category c"
   },
   {
@@ -190,11 +191,11 @@ const headers = [
     class: "",
     cellTemplate: function (d) {
       const rank = d[this.rankProp];
-      return getColorBox(rank, rank, this.colorScale);
+      return getColorBox(rank, rank, this.colorScale(colorDomain));
     },
     headerTemplate: headerTemplate,
     order: "asc",
-    colorScale: d3.scaleQuantile([1, 5], colors),
+    colorScale: (domain) => d3.scaleQuantile(domain, colors),
     category: "category c"
   },
   {
@@ -207,11 +208,11 @@ const headers = [
     class: "",
     cellTemplate: function (d) {
       const rank = d[this.rankProp];
-      return getColorBox(rank, rank, this.colorScale);
+      return getColorBox(rank, rank, this.colorScale(colorDomain));
     },
     headerTemplate: headerTemplate,
     order: "asc",
-    colorScale: d3.scaleQuantile([1, 5], colors),
+    colorScale: (domain) => d3.scaleQuantile(domain, colors),
     category: "category c"
   },
 ];
@@ -232,6 +233,8 @@ const cities = [
   "Chiatura",
   "Tkibuli",
 ];
+
+colorDomain = [1, cities.length];
 
 const data = (function () {
   const arr = [];
