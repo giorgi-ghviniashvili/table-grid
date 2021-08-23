@@ -1,13 +1,16 @@
 Lightweight table grid component
 
+| | |
 |:-------------------------:|:-------------------------:|
-|<a href="https://giorgi-ghviniashvili.github.io/table-grid/"><img height="400px" src="https://giorgi-ghviniashvili.github.io/table-grid/images/light.png"></a><div style="100%">Default</div> | <a href="https://giorgi-ghviniashvili.github.io/table-grid/dark.html"><img  height="400px" src="https://giorgi-ghviniashvili.github.io/table-grid/images/dark.png"></a> <div style="100%">Dark</div>|
+|<a href="https://giorgi-ghviniashvili.github.io/table-grid/"><img height="400px" src="https://giorgi-ghviniashvili.github.io/table-grid/images/light.png"></a><div style="100%">Default</div> | <a href="https://giorgi-ghviniashvili.github.io/table-grid/dark.html"><img  height="400px" src="https://giorgi-ghviniashvili.github.io/table-grid/images/dark.png"></a><div style="100%">Dark</div>|
 
 Features: 
 * responsive
 * highly configurable
 * dynamic columns with icons
 * sortable and filterable
+* column categories
+* different themes
 * only one dependency - d3.js v7
 * color coded cells
 * pagination
