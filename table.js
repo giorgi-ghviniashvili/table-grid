@@ -16,7 +16,7 @@ const getMobileBreakdown = () => {
 
 function Table(params) {
   init_patternify();
-  
+
   const attrs = Object.assign(
     {
       id: Math.floor(Math.random() * 10000000),
@@ -69,17 +69,18 @@ function Table(params) {
     categoryTitles = null,
     showNColumnsMobile = 2, // how many columns to show on mobile scrollable horizontally;
     currentSort = null, // current sort column
-    getValue = (d, propName) => {
-      let prop = propName;
-      if (typeof propName === "function") {
-        prop = propName(d);
-      }
-      return d[prop];
-    },
     timer,
     filterFunc,
     showN,
     firstColumnWidth;
+
+  const getValue = (d, propName) => {
+    let prop = propName;
+    if (typeof propName === "function") {
+      prop = propName(d);
+    }
+    return d[prop];
+  };
 
   function main(resize = false) {
     const br = getMobileBreakdown();
@@ -109,7 +110,6 @@ function Table(params) {
           title: d[0],
           headers: d[1].length,
           isMainColumn: d[1][0].isMainColumn,
-          offset: i === 0 ? d[1][0].id - 1 : 0,
         };
       });
 
@@ -157,7 +157,7 @@ function Table(params) {
       });
 
     if (attrs.data.length <= showN) {
-      showMoreOrLessBtn.style('display', 'none')
+      showMoreOrLessBtn.style("display", "none");
     }
 
     drawAll(resize);
@@ -167,6 +167,7 @@ function Table(params) {
     if (categoryTitles.length) {
       addCategoryTitles();
     }
+
     addTableHead(resize);
     addTableBody();
     adjustHeight();
@@ -182,6 +183,15 @@ function Table(params) {
   }
 
   function addCategoryTitles() {
+    if (!categoryTitles.some(d => d.isMainColumn)) {
+      categoryTitles.unshift({
+        title: "main",
+        headers: 1,
+        isMainColumn: true,
+        hidden: true,
+      })
+    }
+
     const catTitle = headerCategories
       .patternify({
         tag: "div",
@@ -194,9 +204,10 @@ function Table(params) {
         if (d.isMainColumn) {
           return `${firstColumnWidth}px`;
         }
-        return `calc(((100% - ${firstColumnWidth}px) / ${
-          headers.length - 1
-        }) * ${d.headers})`;
+        return `calc(((100% - ${firstColumnWidth}px) / ${headers.length - 1}) * ${d.headers})`;
+      })
+      .style("visibility", (d) => {
+        return d.hidden ? "hidden" : null;
       });
 
     catTitle.patternify({
@@ -581,21 +592,22 @@ function Table(params) {
   }
 
   function shuffle(array) {
-    var currentIndex = array.length, temporaryValue, randomIndex;
-  
+    var currentIndex = array.length,
+      temporaryValue,
+      randomIndex;
+
     // While there remain elements to shuffle...
     while (0 !== currentIndex) {
-  
       // Pick a remaining element...
       randomIndex = Math.floor(Math.random() * currentIndex);
       currentIndex -= 1;
-  
+
       // And swap it with the current element.
       temporaryValue = array[currentIndex];
       array[currentIndex] = array[randomIndex];
       array[randomIndex] = temporaryValue;
     }
-  
+
     return array;
   }
 

@@ -66,7 +66,7 @@ const getColorBox = (rank, value, colorScale) => {
     style="background-color: ${color}; color: ${textColor};" 
     data-rank="${rank}"
   >
-    <div class="value">${value}</div>
+    <div class="value">${ordinal_suffix_of(value)}</div>
   </div>`;
 };
 
@@ -79,6 +79,9 @@ function sortFunc(a, b, order) {
   const orderFunc = order === "asc" ? "ascending" : "descending";
   return d3[orderFunc](a[this.rankProp], b[this.rankProp]);
 }
+
+
+
 const headers = [
   {
     id: 0,
@@ -90,11 +93,11 @@ const headers = [
     cellTemplate: (d) => {
       return `${d.City}`;
     },
-    headerTemplate: mainHeaderTemplate,
+    headerTemplate: mainHeaderTemplate
   },
   {
     id: 1,
-    name: "Column A",
+    name: "Ranking",
     icon: "https://giorgi-ghviniashvili.github.io/typeamedia/tranquil-destinations/images/icons/hinduist-yoga-position.svg",
     propName: "column_a",
     rankProp: "column_a",
@@ -107,6 +110,7 @@ const headers = [
     headerTemplate: headerTemplate,
     order: "asc",
     colorScale: d3.scaleQuantile([1, 5], colors),
+    category: "category a"
   },
   {
     id: 2,
@@ -123,10 +127,11 @@ const headers = [
     headerTemplate: headerTemplate,
     order: "asc",
     colorScale: d3.scaleQuantile([1, 5], colors),
+    category: "category a"
   },
   {
     id: 3,
-    name: "Column B",
+    name: "Column C",
     icon: "https://giorgi-ghviniashvili.github.io/typeamedia/tranquil-destinations/images/icons/tap.svg",
     propName: "column_c",
     rankProp: "column_c",
@@ -139,10 +144,11 @@ const headers = [
     headerTemplate: headerTemplate,
     order: "asc",
     colorScale: d3.scaleQuantile([1, 5], colors),
+    category: "category b"
   },
   {
     id: 4,
-    name: "Column B",
+    name: "Column D",
     icon: "https://giorgi-ghviniashvili.github.io/typeamedia/tranquil-destinations/images/icons/tap.svg",
     propName: "column_d",
     rankProp: "column_d",
@@ -155,6 +161,58 @@ const headers = [
     headerTemplate: headerTemplate,
     order: "asc",
     colorScale: d3.scaleQuantile([1, 5], colors),
+    category: "category b"
+  },
+  {
+    id: 5,
+    name: "Column E",
+    icon: "https://giorgi-ghviniashvili.github.io/typeamedia/tranquil-destinations/images/icons/tap.svg",
+    propName: "column_e",
+    rankProp: "column_e",
+    sort: sortFunc,
+    class: "",
+    cellTemplate: function (d) {
+      const rank = d[this.rankProp];
+      return getColorBox(rank, rank, this.colorScale);
+    },
+    headerTemplate: headerTemplate,
+    order: "asc",
+    colorScale: d3.scaleQuantile([1, 5], colors),
+    category: "category c"
+  },
+  {
+    id: 6,
+    name: "Column F",
+    icon: "https://giorgi-ghviniashvili.github.io/typeamedia/tranquil-destinations/images/icons/tap.svg",
+    propName: "column_f",
+    rankProp: "column_f",
+    sort: sortFunc,
+    class: "",
+    cellTemplate: function (d) {
+      const rank = d[this.rankProp];
+      return getColorBox(rank, rank, this.colorScale);
+    },
+    headerTemplate: headerTemplate,
+    order: "asc",
+    colorScale: d3.scaleQuantile([1, 5], colors),
+    category: "category c"
+  },
+  {
+    id: 7,
+    name: "Column G",
+    icon: "https://giorgi-ghviniashvili.github.io/typeamedia/tranquil-destinations/images/icons/tap.svg",
+    propName: "column_g",
+    rankProp: "column_g",
+    sort: sortFunc,
+    class: "",
+    cellTemplate: function (d) {
+      const rank = d[this.rankProp];
+      return getColorBox(rank, rank, this.colorScale);
+    },
+    headerTemplate: headerTemplate,
+    order: "asc",
+    colorScale: d3.scaleQuantile([1, 5], colors),
+    category: "category c"
   },
 ];
 
@@ -173,7 +231,7 @@ const cities = [
   "Dedoplistskaro",
   "Chiatura",
   "Tkibuli",
-  ];
+];
 
 const data = (function () {
   const arr = [];
@@ -221,4 +279,19 @@ function shuffle(array) {
   }
 
   return array;
+}
+
+function ordinal_suffix_of(i) {
+  var j = i % 10,
+    k = i % 100;
+  if (j == 1 && k != 11) {
+    return i + "st";
+  }
+  if (j == 2 && k != 12) {
+    return i + "nd";
+  }
+  if (j == 3 && k != 13) {
+    return i + "rd";
+  }
+  return i + "th";
 }
