@@ -1,0 +1,40 @@
+{
+  "name": "js-lib-starter",
+  "version": "1.0.0",
+  "description": "Lightweight table grid component",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:giorgi-ghviniashvili/table-grid.git"
+  },
+  "keywords": [
+    "js-template",
+    "chart-template",
+    "npm-lib"
+  ],
+  "author": "Giorgi Ghviniashvili",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/giorgi-ghviniashvili/table-grid/issues"
+  },
+  "homepage": "https://github.com/giorgi-ghviniashvili/table-grid#readme",
+  "devDependencies": {
+    "@babel/core": "^7.15.0",
+    "@babel/preset-env": "^7.15.0",
+    "@rollup/plugin-babel": "^5.3.0",
+    "@rollup/plugin-node-resolve": "^13.0.4",
+    "rollup": "^2.56.3",
+    "rollup-plugin-terser": "^7.0.2"
+  },
+  "dependencies": {
+    "d3": "^7.0.1"
+  },
+  "files": [
+    "dist"
+  ]
+}

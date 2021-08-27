@@ -243,7 +243,7 @@ const data = (function () {
   return arr;
 })();
 
-const table = Table({
+const table = d3Table.Table({
   data,
   headers,
   container: "#table",

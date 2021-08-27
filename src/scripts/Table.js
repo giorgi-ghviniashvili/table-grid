@@ -1,3 +1,9 @@
+import { selection, select } from "d3-selection";
+import { groups } from "d3-array";
+import DataStore from "./DataStore";
+
+const d3 = {selection, select, groups};
+
 const getMobileBreakdown = () => {
   const viewport = window.innerWidth;
 
@@ -617,3 +623,5 @@ function Table(params) {
 
   return main;
 }
+
+export default Table;

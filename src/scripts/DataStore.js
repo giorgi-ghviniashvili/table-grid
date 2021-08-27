@@ -42,3 +42,5 @@ class DataStore {
     return this.filtered_data <= this.page_size;
   }
 }
+
+export default DataStore;
