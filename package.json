@@ -1,5 +1,5 @@
 {
-  "name": "js-lib-starter",
+  "name": "table-grid",
   "version": "1.0.0",
   "description": "Lightweight table grid component",
   "main": "dist/cjs/index.js",
