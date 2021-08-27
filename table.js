@@ -21,8 +21,8 @@ function Table(params) {
     {
       id: Math.floor(Math.random() * 10000000),
       container: "body",
-      data: [],
-      headers: [],
+      data: [], // all data
+      headers: [], // column configs
       cellHeight: 60, // height of each cells in table body
       firstColumnWidth: {
         // city column width (varies based on screen size),
@@ -36,7 +36,7 @@ function Table(params) {
         // show
         xs: 6,
         sm: 6,
-        md: 8,
+        md: 10,
         lg: 10,
         rest: 12,
       },
@@ -52,8 +52,7 @@ function Table(params) {
     params
   );
 
-  var data = attrs.data,
-    numOfRows = data.length,
+  var store,
     showMoreOrLessBtn,
     eachWidth,
     viewPortWidth,
@@ -70,9 +69,8 @@ function Table(params) {
     showNColumnsMobile = 2, // how many columns to show on mobile scrollable horizontally;
     currentSort = null, // current sort column
     timer,
-    filterFunc,
-    showN,
-    firstColumnWidth;
+    firstColumnWidth,
+    pageSize;
 
   const getValue = (d, propName) => {
     let prop = propName;
@@ -82,23 +80,12 @@ function Table(params) {
     return d[prop];
   };
 
-  function main(resize = false) {
-    const br = getMobileBreakdown();
+  function main() {
+    setDimensions();
 
-    showN = attrs.pageSize[br];
-
-    showNColumnsMobile = attrs.numOfColumnsMobile[br];
-    firstColumnWidth = attrs.firstColumnWidth[br];
-
+    store = new DataStore(attrs.data, pageSize);
     container = d3.select(attrs.container);
     currentSort = headers.find((d) => d.order);
-
-    if (currentSort) {
-      attrs.data.sort((a, b) => currentSort.sort(a, b, currentSort.order));
-    }
-
-    data = attrs.data.slice(0, showN);
-    numOfRows = data.length;
 
     categoryTitles = d3
       .groups(
@@ -143,24 +130,23 @@ function Table(params) {
       .attr("class", "show-btn btn")
       .text("SHOW MORE")
       .on("click", function () {
-        if (numOfRows === attrs.data.length) {
+        if (store.currentData.length >= store.filtered_data.length) {
           collapse();
         } else {
           showMore();
         }
-
-        if (numOfRows >= attrs.data.length) {
-          showMoreOrLessBtn.text("SHOW LESS");
-        } else {
-          showMoreOrLessBtn.text("SHOW MORE");
-        }
       });
 
-    if (attrs.data.length <= showN) {
-      showMoreOrLessBtn.style("display", "none");
-    }
+    adjustShowBtn();
+    drawAll();
+  }
 
-    drawAll(resize);
+  function setDimensions() {
+    const br = getMobileBreakdown();
+
+    pageSize = attrs.pageSize[br];
+    showNColumnsMobile = attrs.numOfColumnsMobile[br];
+    firstColumnWidth = attrs.firstColumnWidth[br];
   }
 
   function drawAll(resize) {
@@ -175,10 +161,6 @@ function Table(params) {
 
     if (currentSort) {
       sortTableBy(currentSort, false);
-    }
-
-    if (filterFunc) {
-      main.filter(filterFunc);
     }
   }
 
@@ -265,7 +247,7 @@ function Table(params) {
       .patternify({
         tag: "div",
         selector: "table-row",
-        data: data,
+        data: store.currentData,
       })
       .style("left", "0px")
       .style("top", function (d, i) {
@@ -314,13 +296,13 @@ function Table(params) {
     if (!d.sort) return;
 
     // first sort data
-    data.sort((a, b) => d.sort(a, b, d.order));
+    // store.sort((a, b) => d.sort(a, b, d.order));
 
     // get first N rows and shuffle for transition
-    data = shuffle(data.slice(0, numOfRows));
+    // data = shuffle(data.slice(0, numOfRows));
 
     // redraw rows
-    updateRows();
+    // updateRows();
 
     // grey out all icons and clear order property for other headers
     tableHeadCells
@@ -365,7 +347,7 @@ function Table(params) {
 
     table.style(
       "height",
-      tableHeaderHeight + 22 + attrs.cellHeight * numOfRows + "px"
+      tableHeaderHeight + 22 + attrs.cellHeight * store.currentData.length + "px"
     );
   }
 
@@ -447,6 +429,20 @@ function Table(params) {
     }
   }
 
+  function adjustShowBtn() {
+    if (store.onlyOnePage) {
+      showMoreOrLessBtn.style("display", "none");
+    } else {
+      showMoreOrLessBtn.style("display", null);
+
+      if (store.currentData.length >= store.filtered_data.length) {
+        showMoreOrLessBtn.text("SHOW LESS");
+      } else {
+        showMoreOrLessBtn.text("SHOW MORE");
+      }
+    }
+  }
+
   function updateRows() {
     addTableBody();
     adjustHeight();
@@ -454,8 +450,9 @@ function Table(params) {
   }
 
   function showMore() {
-    data = attrs.data.slice(0, Math.min(attrs.data.length, numOfRows + showN));
-    numOfRows = data.length;
+    store.nextPage();
+
+    adjustShowBtn();
 
     if (currentSort) {
       sortTableBy(currentSort, false);
@@ -465,8 +462,9 @@ function Table(params) {
   }
 
   function collapse() {
-    data = attrs.data.slice(0, showN);
-    numOfRows = data.length;
+    store.collapse();
+
+    adjustShowBtn();
 
     if (currentSort) {
       sortTableBy(currentSort, false);
@@ -591,37 +589,10 @@ function Table(params) {
     };
   }
 
-  function shuffle(array) {
-    var currentIndex = array.length,
-      temporaryValue,
-      randomIndex;
-
-    // While there remain elements to shuffle...
-    while (0 !== currentIndex) {
-      // Pick a remaining element...
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex -= 1;
-
-      // And swap it with the current element.
-      temporaryValue = array[currentIndex];
-      array[currentIndex] = array[randomIndex];
-      array[randomIndex] = temporaryValue;
-    }
-
-    return array;
-  }
-
   main.filter = function (filterFunction) {
-    data = attrs.data
-      .filter(filterFunction || (() => true))
-      .slice(0, numOfRows);
+    store.filter(filterFunction);
 
-    if (numOfRows > data.length) {
-      numOfRows = data.length;
-    }
-
-    filterFunc = filterFunction;
-
+    adjustShowBtn();
     addTableBody();
     adjustHeight();
 
@@ -636,7 +607,9 @@ function Table(params) {
     d3.select(window).on("resize." + attrs.id, function () {
       if (timer) clearTimeout(timer);
       timer = setTimeout(() => {
-        main(true);
+        setDimensions();
+        store.pageSize = pageSize;
+        drawAll(true);
       }, 100);
     });
     return main;
