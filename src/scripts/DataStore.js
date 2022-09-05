@@ -32,6 +32,7 @@ class DataStore {
 
   set pageSize(size) {
     this.page_size = size;
+    this.rows_shown = size;
   }
 
   get currentData() {

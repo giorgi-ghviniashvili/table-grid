@@ -247,6 +247,8 @@ const table = d3Table.Table({
   data,
   headers,
   container: "#table",
+  pagination: false,
+  responsive: false
 }).render();
 
 function shuffle(array) {

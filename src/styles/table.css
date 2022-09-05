@@ -32,10 +32,16 @@ body {
   padding: 20px;
 }
 
-.table-grid {
+.v-scrollable {
   overflow-x: auto;
   overflow-y: hidden;
-  height: 1000px;
+  scroll-behavior: smooth;
+}
+
+.h-scrollable {
+  height: 750px;
+  overflow-x: hidden;
+  overflow-y: auto;
   scroll-behavior: smooth;
 }
 /* END OF TABLE CONTAINERS */
@@ -210,9 +216,6 @@ body {
 
 .value-column .value,
 .value-column .label {
-  transition-duration: 0.5s;
-  transition-property: all;
-  transition-timing-function: ease-in-out;
   grid-column: 1;
   grid-row: 1;
 }

@@ -41,7 +41,7 @@ function Table(params) {
       pageSize: {
         // show
         xs: 6,
-        sm: 6,
+        sm: 10,
         md: 10,
         lg: 10,
         rest: 12,
@@ -54,11 +54,14 @@ function Table(params) {
         rest: 12,
       },
       mobileBreakdown: "xs",
+      pagination: true,
+      sortable: true,
+      responsive: true,
     },
     params
   );
 
-  var store,
+  let store,
     showMoreOrLessBtn,
     eachWidth,
     viewPortWidth,
@@ -74,7 +77,6 @@ function Table(params) {
     categoryTitles = null,
     showNColumnsMobile = 2, // how many columns to show on mobile scrollable horizontally;
     currentSort = null, // current sort column
-    timer,
     firstColumnWidth,
     pageSize;
 
@@ -128,56 +130,81 @@ function Table(params) {
       })
       .style("position", "relative");
 
-    showMoreOrLessBtn = container
-      .patternify({
-        tag: "button",
-        selector: "show-btn",
-      })
-      .attr("class", "show-btn btn")
-      .text("SHOW MORE")
-      .on("click", function () {
-        if (store.currentData.length >= store.filtered_data.length) {
-          collapse();
-        } else {
-          showMore();
-        }
-      });
-
-    adjustShowBtn();
     drawAll();
   }
 
   function setDimensions() {
     const br = getMobileBreakdown();
 
-    pageSize = attrs.pageSize[br];
+    // if responsive and pagination are true, results blank columns
+    if (attrs.responsive && !attrs.pagination) {
+      attrs.responsive = false;
+    }
+
+    pageSize = attrs.pagination ? attrs.pageSize[br] : attrs.data.length + 1;
     showNColumnsMobile = attrs.numOfColumnsMobile[br];
     firstColumnWidth = attrs.firstColumnWidth[br];
+
+    if (store) {
+      store.pageSize = pageSize;
+    }
   }
 
   function drawAll(resize) {
+    if (attrs.pagination) {
+      showMoreOrLessBtn = container
+        .patternify({
+          tag: "button",
+          selector: "show-btn",
+        })
+        .attr("class", "show-btn btn")
+        .text("SHOW MORE")
+        .on("click", function () {
+          if (store.currentData.length >= store.filtered_data.length) {
+            collapse();
+          } else {
+            showMore();
+          }
+        });
+
+      adjustShowBtn();
+    } else {
+      container.selectAll(".show-btn").remove();
+    }
+
+    table.classed("v-scrollable", attrs.responsive);
+    tBody.classed("h-scrollable", !attrs.pagination);
+
     if (categoryTitles.length) {
       addCategoryTitles();
     }
 
     addTableHead(resize);
     addTableBody();
-    adjustHeight();
-    makeItResponsive();
 
-    if (currentSort) {
-      sortTableBy(currentSort, false);
+    if (attrs.pagination) {
+      adjustHeight();
+    }
+
+    if (attrs.responsive) {
+      makeItResponsive();
+    }
+
+    if (attrs.sortable) {
+      if (currentSort) {
+        sortTableBy(currentSort, false);
+      }
     }
   }
 
   function addCategoryTitles() {
-    if (!categoryTitles.some(d => d.isMainColumn)) {
+    if (!categoryTitles.some((d) => d.isMainColumn)) {
       categoryTitles.unshift({
         title: "main",
         headers: 1,
         isMainColumn: true,
         hidden: true,
-      })
+      });
     }
 
     const catTitle = headerCategories
@@ -261,9 +288,9 @@ function Table(params) {
       });
 
     tableRow.each(function (d, i) {
-      var that = d3.select(this);
+      const that = d3.select(this);
 
-      var tableData = that
+      const tableData = that
         .patternify({
           tag: "div",
           selector: "table-data",
@@ -349,7 +376,7 @@ function Table(params) {
   }
 
   function adjustHeight() {
-    var tableHeaderHeight = tableHeader.node().getBoundingClientRect().height;
+    const tableHeaderHeight = tableHeader.node().getBoundingClientRect().height;
 
     table.style(
       "height",
@@ -361,7 +388,7 @@ function Table(params) {
     viewPortWidth = container.node().getBoundingClientRect().width;
     eachWidth = (viewPortWidth - firstColumnWidth) / showNColumnsMobile;
 
-    var w = Math.max(
+    const w = Math.max(
       viewPortWidth,
       eachWidth * (headers.length - 1) + firstColumnWidth
     );
@@ -450,149 +477,38 @@ function Table(params) {
   }
 
   function updateRows() {
+    table.classed("v-scrollable", attrs.responsive);
+    tBody.classed("h-scrollable", !attrs.pagination);
+
     addTableBody();
-    adjustHeight();
-    makeItResponsive();
+
+    if (attrs.pagination) {
+      adjustHeight();
+    }
+
+    if (attrs.responsive) {
+      makeItResponsive();
+    }
   }
 
   function showMore() {
     store.nextPage();
-
     adjustShowBtn();
+    updateRows();
 
-    if (currentSort) {
+    if (currentSort && attrs.sortable) {
       sortTableBy(currentSort, false);
-    } else {
-      updateRows();
     }
   }
 
   function collapse() {
     store.collapse();
-
     adjustShowBtn();
+    updateRows();
 
-    if (currentSort) {
+    if (currentSort && attrs.sortable) {
       sortTableBy(currentSort, false);
-    } else {
-      updateRows();
     }
-  }
-
-  main.createRowWithDetails = function (datum, container) {
-    const w = Math.max(
-      viewPortWidth,
-      eachWidth * (headers.length - 1) + firstColumnWidth
-    );
-
-    const wrapper = container.patternify({
-      tag: "div",
-      selector: "details-wrapper",
-    });
-
-    const row = wrapper.patternify({
-      tag: "div",
-      selector: "table-row",
-    });
-
-    const tableData = row
-      .patternify({
-        tag: "div",
-        selector: "table-data",
-        data: headers,
-      })
-      .attr("class", (d) => {
-        return (
-          "table-data" +
-          (d.isMainColumn ? " main-column" : " value-column") +
-          (d.class ? " " + d.class : "")
-        );
-      });
-
-    tableData
-      .patternify({
-        tag: "div",
-        selector: "info-row-header",
-        data: (m) => [m],
-      })
-      .style("visibility", (d) => {
-        if (d.isMainColumn) {
-          return "hidden";
-        }
-        return null;
-      })
-      .html((x) => {
-        return `<div class="header-text">
-          ${x.name}
-        </div>`;
-      });
-
-    tableData
-      .patternify({
-        tag: "div",
-        selector: "table-data-inner",
-        data: (m) => [m],
-      })
-      .html((x) => {
-        const value = getValue(datum, x.propName);
-
-        if (x.cellTemplate && typeof x.cellTemplate === "function") {
-          return x.cellTemplate({ ...datum, value });
-        }
-
-        return value;
-      });
-
-    if (getMobileBreakdown() === attrs.mobileBreakdown && w > viewPortWidth) {
-      row
-        .style("position", "static")
-        .style("width", w - firstColumnWidth + "px");
-
-      wrapper.style("margin-left", firstColumnWidth + "px");
-
-      tableData
-        .style("width", (d) => {
-          if (d.isMainColumn) {
-            return firstColumnWidth + "px";
-          }
-          return `calc(100% / ${headers.length - 1})`;
-        })
-        .style("position", (d) => {
-          return d.isMainColumn ? "absolute" : null;
-        })
-        .style("left", (d) => {
-          return d.isMainColumn ? "0px" : null;
-        });
-    } else {
-      tableData.style("width", (d) => {
-        return getWidth(d);
-      });
-    }
-
-    return row;
-  };
-
-  function init_patternify() {
-    d3.selection.prototype.patternify = function (params) {
-      var container = this;
-      var selector = params.selector;
-      var elementTag = params.tag;
-      var data = params.data || [selector];
-
-      // Pattern in action
-      var selection = container.selectAll("." + selector).data(data, (d, i) => {
-        if (typeof d === "object") {
-          if (d.id) {
-            return d.id;
-          }
-        }
-        return i;
-      });
-      selection.exit().remove();
-      selection = selection.enter().append(elementTag).merge(selection);
-      selection.attr("class", selector);
-      return selection;
-    };
   }
 
   main.filter = function (filterFunction) {
@@ -600,28 +516,58 @@ function Table(params) {
 
     adjustShowBtn();
     addTableBody();
-    adjustHeight();
 
-    if (currentSort) {
+    if (attrs.pagination) {
+      adjustHeight();
+    }
+
+    if (currentSort && attrs.sortable) {
       sortTableBy(currentSort, false);
     }
   };
 
   main.render = function () {
     main();
+
+    let tableWidth = window.innerWidth;
+
     // window resize
     d3.select(window).on("resize." + attrs.id, function () {
-      if (timer) clearTimeout(timer);
-      timer = setTimeout(() => {
+      
+      if (tableWidth !== window.innerWidth) {
         setDimensions();
-        store.pageSize = pageSize;
         drawAll(true);
-      }, 100);
+      }
+
+      tableWidth = window.innerWidth;
     });
     return main;
   };
 
   return main;
+}
+
+export function init_patternify() {
+  d3.selection.prototype.patternify = function (params) {
+    var container = this;
+    var selector = params.selector;
+    var elementTag = params.tag;
+    var data = params.data || [selector];
+
+    // Pattern in action
+    var selection = container.selectAll("." + selector).data(data, (d, i) => {
+      if (typeof d === "object") {
+        if (d.id) {
+          return d.id;
+        }
+      }
+      return i;
+    });
+    selection.exit().remove();
+    selection = selection.enter().append(elementTag).merge(selection);
+    selection.attr("class", selector);
+    return selection;
+  };
 }
 
 export default Table;
